@@ -107,12 +107,16 @@ const LandingPage: React.FC = () => {
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-blue-600 to-purple-600 bg-clip-text text-transparent dark:from-gray-100 dark:via-blue-400 dark:to-purple-400">
             The Future of
             <br />
-            <span className="relative inline-block">
-              Supply Chain
-              <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transform scale-x-110"></div>
+            <span className="relative">
+              Compliance
+              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 flex items-center space-x-1">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce delay-100"></div>
+                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce delay-200"></div>
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce delay-300"></div>
+                <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce delay-400"></div>
+              </div>
             </span>
-            <br />
-            Compliance
           </h1>
           
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
