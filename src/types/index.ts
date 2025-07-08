@@ -81,25 +81,6 @@ export interface VerifiableCredential {
   certificationLevel?: string;
 }
 
-// Dashboard Types
-export interface DashboardStats {
-  label: string;
-  value: string;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-}
-
-export interface CertificateListItem {
-  id: string;
-  product: string;
-  supplier: string;
-  status: 'approved' | 'pending' | 'rejected';
-  date: string;
-  location: string;
-  euReference: string;
-  blockchainHash: string;
-}
-
 // Processing Step Types
 export interface ProcessingStep {
   id: number;
@@ -111,12 +92,6 @@ export interface ProcessingStep {
 // Component Props Types
 export interface AuthProps {
   onLogin: (userData: UserData) => void;
-}
-
-export interface DashboardProps {
-  user: UserData;
-  onCreateDeclaration: () => void;
-  onOpenWallet: () => void;
 }
 
 export interface DeclarationFormProps {
@@ -132,9 +107,4 @@ export interface CertificateProps {
 export interface WalletProps {
   onBack: () => void;
   user: UserData;
-}
-
-export interface LayoutProps {
-  children: React.ReactNode;
-  title?: string;
 }
