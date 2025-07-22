@@ -8,7 +8,6 @@ import {
   Bot, 
   FileText, 
   CheckCircle,
-  Loader,
   X,
   Sparkles
 } from 'lucide-react';
@@ -18,13 +17,13 @@ import Card from '../atoms/Card';
 import Badge from '../atoms/Badge';
 import { DeclarationFormProps, DeclarationData, DocumentFile } from '../../types';
 import { cn } from '../../utils/cn';
+import SimpleAIAssistant from './SimpleAIAssistant';
+import AIEnhancedInput from '../molecules/AIEnhancedInput';
+import AIEnhancedTextarea from '../molecules/AIEnhancedTextarea';
 
 const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmit }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
-  const [aiQuestion, setAiQuestion] = useState('');
-  const [aiResponse, setAiResponse] = useState('');
-  const [isLoadingAi, setIsLoadingAi] = useState(false);
 
   const [formData, setFormData] = useState<DeclarationData>({
     productType: '',
@@ -75,31 +74,6 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
         documents: [...prev.documents, ...newFiles]
       }));
     }
-  };
-
-  const handleAiAssistant = async () => {
-    if (!aiQuestion.trim()) return;
-    
-    setIsLoadingAi(true);
-    setAiResponse('');
-    
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const responses = {
-      'what is eudr': 'EUDR (EU Deforestation Regulation) requires companies to ensure their products are not linked to deforestation. You must provide due diligence information about your supply chain.',
-      'geolocation': 'Geolocation data should include GPS coordinates of the farm or production area. This helps verify the product origin and assess deforestation risks.',
-      'documents': 'Required documents typically include: supplier certificates, land ownership documents, forest risk assessment reports, and product traceability records.',
-      'risk assessment': 'Forest risk assessment evaluates the likelihood of deforestation in your supply chain. Consider factors like location, supplier practices, and local regulations.'
-    };
-    
-    const defaultResponse = "I'm here to help with EUDR compliance. Could you please be more specific about what you'd like to know regarding product declarations, supplier information, or risk assessments?";
-    
-    const response = Object.entries(responses).find(([key]) => 
-      aiQuestion.toLowerCase().includes(key)
-    )?.[1] || defaultResponse;
-    
-    setAiResponse(response);
-    setIsLoadingAi(false);
   };
 
   const handleNext = () => {
@@ -172,33 +146,38 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
                   <option value="wood">Wood</option>
                 </select>
               </div>
-              <Input
+              <AIEnhancedInput
                 label="Product Name"
                 value={formData.productName}
                 onChange={(e) => handleInputChange('productName', e.target.value)}
                 placeholder="e.g., Arabica Coffee Beans"
+                fieldType="productName"
+                productType={formData.productType}
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Product Description
-              </label>
-              <textarea
+              <AIEnhancedTextarea
+                label="Product Description"
                 value={formData.productDescription}
                 onChange={(e) => handleInputChange('productDescription', e.target.value)}
-                rows={4}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="Detailed product description..."
+                fieldType="productDescription"
+                productType={formData.productType}
+                productName={formData.productName}
+                rows={4}
               />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Input
+              <AIEnhancedInput
                 label="HS Code"
                 value={formData.hsCode}
                 onChange={(e) => handleInputChange('hsCode', e.target.value)}
                 placeholder="e.g., 090111"
+                fieldType="hsCode"
+                productType={formData.productType}
+                productName={formData.productName}
               />
               <Input
                 label="Quantity"
@@ -207,23 +186,14 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
                 onChange={(e) => handleInputChange('quantity', e.target.value)}
                 placeholder="e.g., 1000"
               />
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Unit
-                </label>
-                <select
-                  value={formData.unit}
-                  onChange={(e) => handleInputChange('unit', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                >
-                  <option value="">Select Unit</option>
-                  <option value="kg">Kilograms</option>
-                  <option value="tons">Tons</option>
-                  <option value="liters">Liters</option>
-                  <option value="pieces">Pieces</option>
-                  <option value="m3">Cubic Meters</option>
-                </select>
-              </div>
+              <AIEnhancedInput
+                label="Unit"
+                value={formData.unit}
+                onChange={(e) => handleInputChange('unit', e.target.value)}
+                placeholder="Select or type unit"
+                fieldType="unit"
+                productType={formData.productType}
+              />
             </div>
           </div>
         );
@@ -247,15 +217,13 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Supplier Address
-              </label>
-              <textarea
+              <AIEnhancedTextarea
+                label="Supplier Address"
                 value={formData.supplierAddress}
                 onChange={(e) => handleInputChange('supplierAddress', e.target.value)}
-                rows={3}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="Complete supplier address..."
+                fieldType="supplierAddress"
+                rows={3}
               />
             </div>
             
@@ -362,15 +330,14 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Forest Risk Assessment
-              </label>
-              <textarea
+              <AIEnhancedTextarea
+                label="Forest Risk Assessment"
                 value={formData.forestRiskAssessment}
                 onChange={(e) => handleInputChange('forestRiskAssessment', e.target.value)}
-                rows={4}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="Describe the forest risk assessment for this product..."
+                fieldType="forestRiskAssessment"
+                productType={formData.productType}
+                rows={4}
               />
             </div>
           </div>
@@ -429,15 +396,14 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Risk Mitigation Measures
-              </label>
-              <textarea
+              <AIEnhancedTextarea
+                label="Risk Mitigation Measures"
                 value={formData.riskMitigation}
                 onChange={(e) => handleInputChange('riskMitigation', e.target.value)}
-                rows={4}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="Describe risk mitigation measures taken..."
+                fieldType="riskMitigation"
+                productType={formData.productType}
+                rows={4}
               />
             </div>
           </div>
@@ -612,57 +578,14 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
         </div>
       </div>
 
-      {/* AI Assistant Modal */}
-      {isAiAssistantOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                AI Assistant
-              </h3>
-              <button
-                onClick={() => setIsAiAssistantOpen(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <Input
-                label="Ask a question"
-                value={aiQuestion}
-                onChange={(e) => setAiQuestion(e.target.value)}
-                placeholder="e.g., What is EUDR?"
-              />
-              
-              <Button
-                variant="primary"
-                onClick={handleAiAssistant}
-                disabled={isLoadingAi}
-                className="w-full"
-              >
-                {isLoadingAi ? (
-                  <>
-                    <Loader className="animate-spin mr-2" size={16} />
-                    Thinking...
-                  </>
-                ) : (
-                  'Ask AI'
-                )}
-              </Button>
-              
-              {aiResponse && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                  <p className="text-sm text-blue-900 dark:text-blue-100">
-                    {aiResponse}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* AI Assistant */}
+      <SimpleAIAssistant
+        isOpen={isAiAssistantOpen}
+        onClose={() => setIsAiAssistantOpen(false)}
+        formData={formData as unknown as Record<string, string | number | string[]>}
+        onAutofill={handleInputChange}
+        currentStep={currentStep}
+      />
     </div>
   );
 };
