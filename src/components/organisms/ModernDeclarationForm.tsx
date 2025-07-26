@@ -143,7 +143,6 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragOver(true);
   };
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
@@ -155,7 +154,10 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragOver(false);
+    // Only set drag over to false if we're leaving the drop zone entirely
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragOver(false);
+    }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -444,7 +446,7 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
               
               <div 
                 className={cn(
-                  "border-2 border-dashed rounded-xl p-8 text-center transition-colors",
+                  "border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer",
                   isDragOver
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-900/10"
                     : "border-gray-300 dark:border-gray-600 hover:border-blue-400"
@@ -453,6 +455,16 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
+                onClick={() => document.getElementById('file-upload')?.click()}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    document.getElementById('file-upload')?.click();
+                  }
+                }}
+                aria-label="Upload files by clicking or dragging and dropping"
               >
                 <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                 <p className="text-gray-600 dark:text-gray-400 mb-2">
@@ -469,11 +481,21 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
                   className="hidden"
                   id="file-upload"
                 />
-                <label htmlFor="file-upload">
-                  <Button variant="outline" className="cursor-pointer">
-                    Select Files
-                  </Button>
-                </label>
+                <Button 
+                  variant="outline" 
+                  className="cursor-pointer"
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                    if (fileInput) {
+                      fileInput.click();
+                    }
+                  }}
+                >
+                  Select Files
+                </Button>
               </div>
               
               {uploadSuccess && (
@@ -490,8 +512,8 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
                     Upload Errors:
                   </h4>
                   <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
-                    {uploadErrors.map((error, index) => (
-                      <li key={index}>• {error}</li>
+                    {uploadErrors.map((error) => (
+                      <li key={error}>• {error}</li>
                     ))}
                   </ul>
                 </div>

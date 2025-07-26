@@ -21,6 +21,7 @@ import Card from '../atoms/Card';
 import Badge from '../atoms/Badge';
 import Navigation from '../organisms/Navigation';
 import AIAssistantCard from '../molecules/AIAssistantCard';
+import SimpleAIAssistant from '../organisms/SimpleAIAssistant';
 import { UserData } from '../../types';
 import { cn } from '../../utils/cn';
 
@@ -38,6 +39,7 @@ const ModernDashboard: React.FC<ModernDashboardProps> = ({
   const router = useRouter();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [aiStatus, setAiStatus] = useState<'idle' | 'thinking' | 'responding'>('idle');
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('veritrace_user');
@@ -45,6 +47,7 @@ const ModernDashboard: React.FC<ModernDashboardProps> = ({
   };
 
   const handleAIInteraction = () => {
+    setShowAIAssistant(true);
     setAiStatus('thinking');
     setTimeout(() => {
       setAiStatus('responding');
@@ -52,6 +55,21 @@ const ModernDashboard: React.FC<ModernDashboardProps> = ({
         setAiStatus('idle');
       }, 2000);
     }, 1500);
+  };
+
+  // Mock form data for AI assistant - in a real app, this would come from actual form state
+  const mockFormData = {
+    productType: '',
+    productName: '',
+    hsCode: '',
+    unit: '',
+    productDescription: '',
+    forestRiskAssessment: ''
+  };
+
+  const handleAutofill = (field: string, value: string) => {
+    // In a real app, this would update the actual form data
+    console.log(`Autofill ${field}: ${value}`);
   };
 
   const stats = [
@@ -253,14 +271,29 @@ const ModernDashboard: React.FC<ModernDashboardProps> = ({
                       <action.icon className={cn('h-5 w-5', action.textColor)} />
                     </div>
                     <div className="text-left">
-                      <p className="font-medium text-gray-900 dark:text-gray-100">
+                      <p className={cn(
+                        'font-medium',
+                        action.color.includes('gradient') 
+                          ? 'text-white' 
+                          : 'text-gray-900 dark:text-gray-100'
+                      )}>
                         {action.title}
                       </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className={cn(
+                        'text-sm',
+                        action.color.includes('gradient') 
+                          ? 'text-white/80' 
+                          : 'text-gray-600 dark:text-gray-400'
+                      )}>
                         {action.description}
                       </p>
                     </div>
-                    <ArrowRight className="h-4 w-4 ml-auto group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className={cn(
+                      'h-4 w-4 ml-auto group-hover:translate-x-1 transition-transform',
+                      action.color.includes('gradient') 
+                        ? 'text-white' 
+                        : 'text-gray-600 dark:text-gray-400'
+                    )} />
                   </Button>
                 ))}
               </div>
@@ -381,6 +414,15 @@ const ModernDashboard: React.FC<ModernDashboardProps> = ({
           </Card>
         </div>
       </main>
+
+      {/* AI Assistant Popup */}
+      <SimpleAIAssistant
+        isOpen={showAIAssistant}
+        onClose={() => setShowAIAssistant(false)}
+        formData={mockFormData}
+        onAutofill={handleAutofill}
+        currentStep={1}
+      />
     </div>
   );
 };
