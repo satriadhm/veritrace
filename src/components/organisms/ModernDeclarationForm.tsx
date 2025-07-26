@@ -24,6 +24,17 @@ import AIEnhancedTextarea from '../molecules/AIEnhancedTextarea';
 const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmit }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [uploadErrors, setUploadErrors] = useState<string[]>([]);
+  const [uploadSuccess, setUploadSuccess] = useState<string>('');
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   const [formData, setFormData] = useState<DeclarationData>({
     productType: '',
@@ -63,17 +74,97 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
 
   const handleFileUpload = (files: FileList | null) => {
     if (files) {
-      const newFiles: DocumentFile[] = Array.from(files).map(file => ({
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        id: Date.now() + Math.random()
-      }));
-      setFormData(prev => ({
-        ...prev,
-        documents: [...prev.documents, ...newFiles]
-      }));
+      const maxFileSize = 10 * 1024 * 1024; // 10MB
+      const allowedTypes = [
+        'application/pdf',
+        'image/jpeg',
+        'image/png',
+        'image/jpg',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain'
+      ];
+
+      const validFiles: DocumentFile[] = [];
+      const errors: string[] = [];
+
+      Array.from(files).forEach(file => {
+        // Check file size
+        if (file.size > maxFileSize) {
+          errors.push(`${file.name} is too large (max 10MB)`);
+          return;
+        }
+
+        // Check file type
+        if (!allowedTypes.includes(file.type)) {
+          errors.push(`${file.name} has unsupported file type`);
+          return;
+        }
+
+        // Check for duplicates
+        const isDuplicate = formData.documents.some(doc => 
+          doc.name === file.name && doc.size === file.size
+        );
+        
+        if (isDuplicate) {
+          errors.push(`${file.name} is already uploaded`);
+          return;
+        }
+
+        validFiles.push({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          id: Date.now() + Math.random()
+        });
+      });
+
+      if (validFiles.length > 0) {
+        setFormData(prev => ({
+          ...prev,
+          documents: [...prev.documents, ...validFiles]
+        }));
+        
+        // Show success message
+        setUploadSuccess(`Successfully uploaded ${validFiles.length} file${validFiles.length > 1 ? 's' : ''}`);
+        setTimeout(() => setUploadSuccess(''), 3000);
+      }
+
+      // Update errors state instead of using alert
+      setUploadErrors(errors);
+      
+      // Clear errors after 5 seconds
+      if (errors.length > 0) {
+        setTimeout(() => setUploadErrors([]), 5000);
+      }
     }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    
+    const files = e.dataTransfer.files;
+    handleFileUpload(files);
   };
 
   const handleNext = () => {
@@ -351,14 +442,29 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
                 Supporting Documents
               </label>
               
-              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center">
+              <div 
+                className={cn(
+                  "border-2 border-dashed rounded-xl p-8 text-center transition-colors",
+                  isDragOver
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/10"
+                    : "border-gray-300 dark:border-gray-600 hover:border-blue-400"
+                )}
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
                 <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-gray-600 dark:text-gray-400 mb-2">
                   Drag and drop files here, or click to select
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-500 mb-4">
+                  Supported: PDF, DOC, DOCX, JPG, PNG, TXT (max 10MB each)
                 </p>
                 <input
                   type="file"
                   multiple
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
                   onChange={(e) => handleFileUpload(e.target.files)}
                   className="hidden"
                   id="file-upload"
@@ -370,6 +476,27 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
                 </label>
               </div>
               
+              {uploadSuccess && (
+                <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
+                  <p className="text-sm text-green-800 dark:text-green-400">
+                    ✓ {uploadSuccess}
+                  </p>
+                </div>
+              )}
+              
+              {uploadErrors.length > 0 && (
+                <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                  <h4 className="text-sm font-medium text-red-800 dark:text-red-400 mb-2">
+                    Upload Errors:
+                  </h4>
+                  <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
+                    {uploadErrors.map((error, index) => (
+                      <li key={index}>• {error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
               {formData.documents.length > 0 && (
                 <div className="mt-6 space-y-3">
                   {formData.documents.map((doc) => (
@@ -379,7 +506,7 @@ const ModernDeclarationForm: React.FC<DeclarationFormProps> = ({ onBack, onSubmi
                         <div>
                           <p className="font-medium text-gray-900 dark:text-gray-100">{doc.name}</p>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {(doc.size / 1024).toFixed(1)} KB
+                            {formatFileSize(doc.size)}
                           </p>
                         </div>
                       </div>
