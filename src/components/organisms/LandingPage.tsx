@@ -22,47 +22,47 @@ const LandingPage: React.FC = () => {
   const features = [
     {
       icon: Shield,
-      title: 'AI-Powered Compliance',
-      description: 'Advanced AI ensures your EUDR declarations meet all regulatory requirements automatically.',
+      title: 'RAG-Enhanced AI Compliance',
+      description: 'Retrieval-Augmented Generation AI provides real-time EUDR guidance using the latest regulatory knowledge base.',
       color: 'text-blue-600 dark:text-blue-400'
     },
     {
       icon: Brain,
-      title: 'Smart Risk Assessment',
-      description: 'Machine learning algorithms analyze supply chain risks and provide actionable insights.',
+      title: 'Intelligent Knowledge Retrieval',
+      description: 'Advanced RAG technology instantly accesses comprehensive compliance databases for accurate recommendations.',
       color: 'text-purple-600 dark:text-purple-400'
     },
     {
       icon: Globe,
-      title: 'Blockchain Verification',
-      description: 'Immutable proof of compliance stored on blockchain for maximum transparency.',
+      title: 'Immutable Blockchain Records',
+      description: 'Decentralized blockchain infrastructure ensures tamper-proof compliance verification and audit trails.',
       color: 'text-green-600 dark:text-green-400'
     },
     {
       icon: Zap,
-      title: 'Real-time Monitoring',
-      description: 'Continuous monitoring of regulatory changes and automated compliance updates.',
+      title: 'Smart Contract Automation',
+      description: 'Automated blockchain smart contracts streamline verification processes and ensure instant compliance validation.',
       color: 'text-yellow-600 dark:text-yellow-400'
     },
     {
       icon: Leaf,
-      title: 'Sustainability Focus',
-      description: 'Track and verify deforestation-free supply chains with precision.',
+      title: 'Cryptographic Supply Chain',
+      description: 'End-to-end cryptographic verification powered by blockchain technology for complete supply chain transparency.',
       color: 'text-emerald-600 dark:text-emerald-400'
     },
     {
       icon: Users,
-      title: 'Collaborative Platform',
-      description: 'Connect with suppliers, auditors, and stakeholders in one unified platform.',
+      title: 'Decentralized Trust Network',
+      description: 'Blockchain-based trust network eliminates intermediaries while ensuring verifiable stakeholder collaboration.',
       color: 'text-indigo-600 dark:text-indigo-400'
     }
   ];
 
   const stats = [
-    { number: '10,000+', label: 'Verified Suppliers', icon: Users },
-    { number: '95%', label: 'Compliance Rate', icon: CheckCircle },
-    { number: '50+', label: 'Countries', icon: Globe },
-    { number: '24/7', label: 'AI Monitoring', icon: Brain }
+    { number: 'RAG', label: 'AI Knowledge Engine', icon: Brain },
+    { number: '100%', label: 'Blockchain Secured', icon: CheckCircle },
+    { number: 'Global', label: 'Supply Chain Coverage', icon: Globe },
+    { number: 'Real-time', label: 'Smart Verification', icon: Users }
   ];
 
   return (
@@ -101,7 +101,7 @@ const LandingPage: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <Badge variant="neon" className="mb-6">
             <Sparkles className="h-3 w-3 mr-1" />
-            AI-Powered EUDR Compliance
+            RAG AI + Blockchain Technology
           </Badge>
           
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-blue-600 to-purple-600 bg-clip-text text-transparent dark:from-gray-100 dark:via-blue-400 dark:to-purple-400">
@@ -111,8 +111,8 @@ const LandingPage: React.FC = () => {
           </h1>
           
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-            Leverage cutting-edge AI and blockchain technology to ensure seamless EUDR compliance 
-            while building sustainable, deforestation-free supply chains.
+            Harness the power of Retrieval-Augmented Generation (RAG) AI and immutable blockchain technology 
+            to revolutionize EUDR compliance with intelligent, decentralized verification systems.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -158,14 +158,14 @@ const LandingPage: React.FC = () => {
           <div className="text-center mb-16">
             <Badge variant="info" className="mb-4">
               <Brain className="h-3 w-3 mr-1" />
-              AI-Powered Features
+              RAG AI + Blockchain
             </Badge>
             <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-              Built for the Future of Compliance
+              Next-Generation Technology Stack
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Our platform combines artificial intelligence, blockchain technology, and intuitive design 
-              to revolutionize how you manage EUDR compliance.
+              Our platform leverages Retrieval-Augmented Generation AI and decentralized blockchain infrastructure 
+              to deliver unprecedented compliance intelligence and verification capabilities.
             </p>
           </div>
 
@@ -198,8 +198,8 @@ const LandingPage: React.FC = () => {
             Ready to Transform Your Supply Chain?
           </h2>
           <p className="text-xl mb-8 opacity-90">
-            Join thousands of companies already using VeriTrace to ensure EUDR compliance 
-            with AI-powered precision and blockchain security.
+            Experience the future of compliance with our revolutionary RAG AI and blockchain-powered 
+            platform designed for unmatched precision and security.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/auth">
